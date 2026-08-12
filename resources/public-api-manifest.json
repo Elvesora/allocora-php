@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "api_version": "v1",
+  "base_path": "/api/v1",
+  "authentication": "bearer",
+  "rate_limit": {
+    "max_attempts": 1000,
+    "window_seconds": 60
+  },
+  "operations": [
+    {
+      "name": "api.v1.payees.index",
+      "method": "GET",
+      "path": "/api/v1/payees",
+      "permission": "read:payees"
+    },
+    {
+      "name": "api.v1.payees.show",
+      "method": "GET",
+      "path": "/api/v1/payees/{id}",
+      "permission": "read:payees"
+    },
+    {
+      "name": "api.v1.payees.batch-store",
+      "method": "POST",
+      "path": "/api/v1/payees/batch",
+      "permission": "write:payees"
+    },
+    {
+      "name": "api.v1.payees.batch-upsert",
+      "method": "POST",
+      "path": "/api/v1/payees/batch/upsert",
+      "permission": "write:payees"
+    },
+    {
+      "name": "api.v1.payees.store",
+      "method": "POST",
+      "path": "/api/v1/payees",
+      "permission": "write:payees"
+    },
+    {
+      "name": "api.v1.payees.upsert",
+      "method": "POST",
+      "path": "/api/v1/payees/upsert",
+      "permission": "write:payees"
+    },
+    {
+      "name": "api.v1.payees.batch-update",
+      "method": "PUT",
+      "path": "/api/v1/payees/batch",
+      "permission": "write:payees"
+    },
+    {
+      "name": "api.v1.payees.update",
+      "method": "PUT",
+      "path": "/api/v1/payees/{id}",
+      "permission": "write:payees"
+    },
+    {
+      "name": "api.v1.products.index",
+      "method": "GET",
+      "path": "/api/v1/products",
+      "permission": "read:products"
+    },
+    {
+      "name": "api.v1.products.show",
+      "method": "GET",
+      "path": "/api/v1/products/{id}",
+      "permission": "read:products"
+    },
+    {
+      "name": "api.v1.products.batch-store",
+      "method": "POST",
+      "path": "/api/v1/products/batch",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.products.batch-upsert",
+      "method": "POST",
+      "path": "/api/v1/products/batch/upsert",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.products.store",
+      "method": "POST",
+      "path": "/api/v1/products",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.products.upsert",
+      "method": "POST",
+      "path": "/api/v1/products/upsert",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.products.batch-update",
+      "method": "PUT",
+      "path": "/api/v1/products/batch",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.products.update",
+      "method": "PUT",
+      "path": "/api/v1/products/{id}",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.products.batch-destroy",
+      "method": "DELETE",
+      "path": "/api/v1/products/batch",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.products.destroy",
+      "method": "DELETE",
+      "path": "/api/v1/products/{id}",
+      "permission": "write:products"
+    },
+    {
+      "name": "api.v1.revenues.index",
+      "method": "GET",
+      "path": "/api/v1/revenues",
+      "permission": "read:revenues"
+    },
+    {
+      "name": "api.v1.revenues.show",
+      "method": "GET",
+      "path": "/api/v1/revenues/{id}",
+      "permission": "read:revenues"
+    },
+    {
+      "name": "api.v1.revenues.batch-store",
+      "method": "POST",
+      "path": "/api/v1/revenues/batch",
+      "permission": "write:revenues"
+    },
+    {
+      "name": "api.v1.revenues.store",
+      "method": "POST",
+      "path": "/api/v1/revenues",
+      "permission": "write:revenues"
+    },
+    {
+      "name": "api.v1.rules.index",
+      "method": "GET",
+      "path": "/api/v1/rules",
+      "permission": "read:rules"
+    },
+    {
+      "name": "api.v1.rules.show",
+      "method": "GET",
+      "path": "/api/v1/rules/{id}",
+      "permission": "read:rules"
+    },
+    {
+      "name": "api.v1.rules.batch-store",
+      "method": "POST",
+      "path": "/api/v1/rules/batch",
+      "permission": "write:rules"
+    },
+    {
+      "name": "api.v1.rules.batch-upsert",
+      "method": "POST",
+      "path": "/api/v1/rules/batch/upsert",
+      "permission": "write:rules"
+    },
+    {
+      "name": "api.v1.rules.store",
+      "method": "POST",
+      "path": "/api/v1/rules",
+      "permission": "write:rules"
+    },
+    {
+      "name": "api.v1.rules.upsert",
+      "method": "POST",
+      "path": "/api/v1/rules/upsert",
+      "permission": "write:rules"
+    },
+    {
+      "name": "api.v1.rules.batch-update",
+      "method": "PUT",
+      "path": "/api/v1/rules/batch",
+      "permission": "write:rules"
+    },
+    {
+      "name": "api.v1.rules.update",
+      "method": "PUT",
+      "path": "/api/v1/rules/{id}",
+      "permission": "write:rules"
+    },
+    {
+      "name": "api.v1.rules.toggle-status",
+      "method": "POST",
+      "path": "/api/v1/rules/{id}/toggle-status",
+      "permission": "write:rules"
+    },
+    {
+      "name": "api.v1.rules.versions",
+      "method": "GET",
+      "path": "/api/v1/rules/{id}/versions",
+      "permission": "read:rules"
+    }
+  ]
+}

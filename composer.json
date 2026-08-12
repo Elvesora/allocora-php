@@ -1,0 +1,83 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "elvesora/allocora-php",
+    "description": "Framework-independent PHP client for the public Allocora API.",
+    "type": "library",
+    "keywords": [
+        "allocation",
+        "allocora",
+        "financial operations",
+        "php sdk",
+        "revenue"
+    ],
+    "homepage": "https://www.allocora.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Elvesora",
+            "homepage": "https://www.elvesora.com"
+        }
+    ],
+    "support": {
+        "docs": "https://www.allocora.com/docs",
+        "issues": "https://github.com/Elvesora/allocora-php/issues",
+        "source": "https://github.com/Elvesora/allocora-php"
+    },
+    "require": {
+        "php": "^8.2",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "guzzlehttp/guzzle": "^7.9"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.29",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5 || ^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Elvesora\\Allocora\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Elvesora\\Allocora\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --no-progress --memory-limit=512M",
+        "format": "pint --format agent",
+        "format-check": "pint --test --format agent",
+        "security-audit": "composer audit --locked --no-interaction",
+        "validate-package": "composer validate --strict",
+        "check": [
+            "@validate-package",
+            "@test",
+            "@analyse",
+            "@format-check",
+            "@security-audit"
+        ]
+    },
+    "config": {
+        "allow-plugins": false,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/.phpstan.cache",
+            "/.phpunit.cache",
+            "/.phpunit.result.cache",
+            "/CODE_OF_CONDUCT.md",
+            "/composer.lock",
+            "/dist",
+            "/phpstan.neon.dist",
+            "/phpunit.xml.dist",
+            "/tests",
+            "/vendor"
+        ]
+    }
+}
