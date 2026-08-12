@@ -1,0 +1,86 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            composer-args: '--prefer-lowest'
+          - php: '8.2'
+            composer-args: ''
+          - php: '8.3'
+            composer-args: ''
+          - php: '8.4'
+            composer-args: ''
+          - php: '8.5'
+            composer-args: ''
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate Composer metadata
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress ${{ matrix.composer-args }}
+
+      - name: Run package checks
+        run: composer check
+
+  archive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
+        with:
+          php-version: '8.5'
+          extensions: json, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Build release archive
+        run: composer archive --format=zip --dir=dist
+
+      - name: Verify archive contents
+        shell: bash
+        run: |
+          archive="$(find dist -maxdepth 1 -name '*.zip' -print -quit)"
+          test -n "$archive"
+          unzip -Z1 "$archive" | tee archive-files.txt
+          grep -Eq '(^|/)composer\.json$' archive-files.txt
+          grep -Eq '(^|/)src/Client\.php$' archive-files.txt
+          grep -Eq '(^|/)resources/public-api-manifest\.json$' archive-files.txt
+          grep -Eq '(^|/)README\.md$' archive-files.txt
+          grep -Eq '(^|/)LICENSE$' archive-files.txt
+          grep -Eq '(^|/)CHANGELOG\.md$' archive-files.txt
+          grep -Eq '(^|/)CONTRIBUTING\.md$' archive-files.txt
+          grep -Eq '(^|/)SECURITY\.md$' archive-files.txt
+          if grep -Eq '(^|/)(tests|vendor|\.github|\.git|dist)(/|$)|(^|/)composer\.lock$|(^|/)phpunit\.xml\.dist$|(^|/)phpstan\.neon\.dist$' archive-files.txt; then
+            echo 'Development-only files were included in the release archive.' >&2
+            exit 1
+          fi
