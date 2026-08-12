@@ -10,7 +10,7 @@ on:
 
 permissions:
   actions: write
-  contents: read
+  contents: write
 
 concurrency:
   group: release-tag-promotion
@@ -197,17 +197,9 @@ jobs:
 
           echo "Release gate ${release_gate_run_id} passed for ${RELEASE_TAG} at ${TARGET_SHA}."
 
-      - name: Mint repository-scoped promotion token
-        id: promotion-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
-          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
-          permission-contents: write
-
       - name: Create protected public release tag
         env:
-          GH_TOKEN: ${{ steps.promotion-token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           RELEASE_REPOSITORY: ${{ github.repository }}
           RELEASE_TAG: ${{ steps.candidate.outputs.release_tag }}
           TAG_OBJECT_SHA: ${{ steps.candidate.outputs.tag_object_sha }}

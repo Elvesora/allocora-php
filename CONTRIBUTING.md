@@ -41,6 +41,6 @@ git push origin refs/tags/vX.Y.Z:refs/tags/release-candidates/vX.Y.Z
 gh workflow run promote-release-tag.yml --ref main -f version=X.Y.Z
 ```
 
-Do not push a public `vX.Y.Z` tag directly. Active repository rules allow only the dedicated release-promoter GitHub App to create public release tags and prevent every actor from updating or deleting them. The protected promotion environment holds the job for explicit approval and supplies the App credential. After approval, the workflow runs from the default branch, verifies the signed candidate against its exact commit, dispatches and waits for the complete `tests` workflow, and creates the public tag only after every gate passes.
+Do not push a public `vX.Y.Z` tag directly. The protected promotion environment holds the job for explicit approval. After approval, the workflow runs from the default branch, verifies the signed candidate against its exact commit, dispatches and waits for the complete `tests` workflow, and uses its repository-scoped GitHub Actions token to create the public tag only after every gate passes. Active repository rules prevent every actor from updating or deleting published public release tags.
 
 Do not create or publish the GitHub release, or declare the Composer version supported, until `promote release tag / signed-tag` succeeds. Attach the audited distribution archive to a draft release before publication. Published release tags must never be moved, replaced, or deleted.
