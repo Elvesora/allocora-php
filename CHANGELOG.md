@@ -2,6 +2,16 @@
 
 All notable changes to this package are documented here.
 
+## [Unreleased]
+
+### Documentation
+
+- Rule reads return retail-price (RRP) allocation keys `royalty_basis` and `rrp_source` unchanged; README explains reading them, name/status-only updates, and the `422` refusal (no retry) for writes that send these keys or replace the allocations of a retail-price rule.
+
+### Tests
+
+- Contract tests for unchanged pass-through of RRP and legacy rule reads, name/status-only request payloads, and a single non-retried `422` refusal.
+
 ## [0.1.0] - 2026-08-12
 
 ### Added

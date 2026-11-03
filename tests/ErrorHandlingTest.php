@@ -91,6 +91,31 @@ final class ErrorHandlingTest extends TestCase
         }
     }
 
+    public function test_retail_price_rule_write_refusal_is_one_validation_exception_without_retry(): void
+    {
+        $history = [];
+        $client = $this->client([
+            new Response(422, ['Content-Type' => 'application/json'], json_encode([
+                'message' => 'This rule uses the retail-price (RRP) royalty basis. Change its allocations in the Allocora workspace rule editor.',
+                'errors' => ['allocations' => ['This rule uses the retail-price (RRP) royalty basis. Change its allocations in the Allocora workspace rule editor.']],
+            ], JSON_THROW_ON_ERROR)),
+        ], $history);
+
+        try {
+            $client->rules()->update(self::RESOURCE_ID, [
+                'allocations' => [['payee_id' => '22222222-2222-4222-8222-222222222222', 'percentage' => 10, 'royalty_basis' => 'rrp', 'rrp_source' => 'file']],
+            ]);
+            self::fail('Expected a validation exception.');
+        } catch (ValidationException $exception) {
+            self::assertSame(422, $exception->statusCode());
+            self::assertFalse($exception->retryable());
+            self::assertSame([], $exception->errors());
+            self::assertSame([], $exception->responseBody());
+        }
+
+        self::assertCount(1, $history, 'A refused rule write must not be retried.');
+    }
+
     #[DataProvider('sensitiveUpstreamErrorCases')]
     public function test_upstream_error_details_never_escape_exception_surfaces(
         int $status,

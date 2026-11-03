@@ -149,6 +149,29 @@ $allocora->rules()->toggleStatus($ruleId);
 $allocora->rules()->versions($ruleId);
 ```
 
+#### Retail-price (RRP) allocations
+
+A flat allocation can calculate its royalty on the retail price instead of actual receipts. Rule reads (`show`, `list`, `versions`) return the stored allocation keys unchanged:
+
+```php
+$rule = $allocora->rules()->show($ruleId)->data();
+
+foreach ($rule['allocations'] as $allocation) {
+    $basis = $allocation['royalty_basis'] ?? 'receipts'; // a missing key means actual receipts
+    $source = $allocation['rrp_source'] ?? null;          // 'file' or 'product_history' when $basis is 'rrp'
+    $rate = $allocation['percentage'];                    // for 'rrp': percent of units × retail price, not of receipts
+}
+```
+
+Treat any other `royalty_basis` value as unknown rather than as receipts. Retail-price allocations are created and changed in the Allocora workspace rule editor. Through the API you can rename a rule, change its status, or toggle it; send only the fields you change:
+
+```php
+$allocora->rules()->update($ruleId, ['name' => 'Retail royalty 2027']);
+$allocora->rules()->toggleStatus($ruleId);
+```
+
+The API returns `422` (`ValidationException`) and creates no rule version when a write sends `royalty_basis` or `rrp_source` in an allocation, or sends `allocations` or `allocation_type` for a rule that uses the retail-price basis — including the allocations you just read. Do not retry such a request; change the allocation in the workspace instead.
+
 ## Batch operations and partial failures
 
 Batch methods accept a list of 1 to 100 non-empty JSON objects and send the API's required `{ "records": [...] }` envelope. Update and archive records must contain an `id` UUID.
