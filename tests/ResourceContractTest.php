@@ -103,6 +103,56 @@ final class ResourceContractTest extends TestCase
     }
 
     /**
+     * @throws JsonException
+     */
+    public function test_rule_reads_return_retail_price_and_legacy_allocation_keys_unchanged(): void
+    {
+        $allocations = [
+            ['payee_id' => '22222222-2222-4222-8222-222222222222', 'percentage' => 10, 'royalty_basis' => 'rrp', 'rrp_source' => 'product_history'],
+            ['payee_id' => '33333333-3333-4333-8333-333333333333', 'percentage' => '5.50', 'royalty_basis' => 'rrp', 'rrp_source' => 'file'],
+            ['payee_id' => '44444444-4444-4444-8444-444444444444', 'percentage' => 5],
+            ['payee_id' => '55555555-5555-4555-8555-555555555555', 'percentage' => 7, 'royalty_basis' => 'future_basis'],
+        ];
+        $rule = ['id' => self::RESOURCE_ID, 'name' => 'Example retail royalty', 'allocation_type' => 'flat', 'allocations' => $allocations];
+        $history = [];
+        $client = $this->client([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['data' => $rule], JSON_THROW_ON_ERROR)),
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['data' => [$rule]], JSON_THROW_ON_ERROR)),
+        ], $history);
+
+        // Identical arrays: keys, absent legacy keys, unknown values and
+        // number/string percentages are all passed through unchanged.
+        self::assertSame($rule, $client->rules()->show(self::RESOURCE_ID)->data());
+        self::assertSame([$rule], $client->rules()->versions(self::RESOURCE_ID)->data());
+        self::assertCount(2, $history);
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function test_rule_name_and_status_changes_send_only_the_changed_fields(): void
+    {
+        $history = [];
+        $client = $this->client([
+            new Response(200, ['Content-Type' => 'application/json'], '{"data":{"id":"'.self::RESOURCE_ID.'"}}'),
+            new Response(200, ['Content-Type' => 'application/json'], '{"data":[],"meta":{"processed":1,"succeeded":1,"failed":0,"limit":100}}'),
+            new Response(200, ['Content-Type' => 'application/json'], '{"data":{"id":"'.self::RESOURCE_ID.'"}}'),
+        ], $history);
+
+        $client->rules()->update(self::RESOURCE_ID, ['name' => 'Retail royalty 2027']);
+        $client->rules()->batchUpdate([['id' => self::RESOURCE_ID, 'status' => 'inactive']]);
+        $client->rules()->toggleStatus(self::RESOURCE_ID);
+
+        self::assertSame(['name' => 'Retail royalty 2027'], json_decode((string) $history[0]['request']->getBody(), true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame(['records' => [['id' => self::RESOURCE_ID, 'status' => 'inactive']]], json_decode((string) $history[1]['request']->getBody(), true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame('', (string) $history[2]['request']->getBody());
+        foreach ($history as $entry) {
+            self::assertStringNotContainsString('royalty_basis', (string) $entry['request']->getBody());
+            self::assertStringNotContainsString('allocations', (string) $entry['request']->getBody());
+        }
+    }
+
+    /**
      * @return iterable<string, array{string, string, string, string, string, string, array<string, mixed>|null}>
      */
     public static function operationCases(): iterable
